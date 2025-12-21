@@ -37,16 +37,28 @@ public class PersonelController {
     }
     
     @PostMapping
-    public ResponseEntity<Personel> create(@RequestBody Personel personel) {
-        Personel created = personelService.addAsync(personel).join();
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<?> create(@RequestBody Personel personel) {
+        try {
+            Personel created = personelService.addAsync(personel).join();
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Hata: " + e.getMessage());
+        }
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Personel> update(@PathVariable Long id, @RequestBody Personel personel) {
-        personel.setId(id);
-        Personel updated = personelService.updateAsync(personel).join();
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Personel personel) {
+        try {
+            personel.setId(id);
+            Personel updated = personelService.updateAsync(personel).join();
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Hata: " + e.getMessage());
+        }
     }
     
     @DeleteMapping("/{id}")

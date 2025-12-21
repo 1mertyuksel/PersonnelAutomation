@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Personel Ekle - CORP ERP v3.0</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <span class="brand-text">CORP ERP v3.0</span>
+            </div>
+            <div class="nav-links">
+                <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+                <a th:href="@{/personel}" class="nav-link active">Personel & Zimmet</a>
+                <a th:href="@{/payroll}" class="nav-link">Maaş Motoru</a>
+                <a th:href="@{/reports}" class="nav-link">Raporlama</a>
+            </div>
+            <div class="nav-actions">
+                <a th:href="@{/logout}" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Yeni Personel Ekle</h1>
+                    <a th:href="@{/personel}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Geri Dön
+                    </a>
+                </div>
+                
+                <!-- Form Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-plus"></i> Yeni Personel Bilgileri
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="personelForm" th:object="${personel}">
+                            <!-- Kişisel Bilgiler -->
+                            <h6 class="section-title mb-3">
+                                <i class="bi bi-person"></i> Kişisel Bilgiler
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">Ad <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" 
+                                           required placeholder="Ad">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Soyad <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" 
+                                           required placeholder="Soyad">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="photoUrl" class="form-label">Fotoğraf URL</label>
+                                    <input type="url" class="form-control" id="photoUrl" name="photoUrl" 
+                                           placeholder="https://example.com/photo.jpg">
+                                    <small class="form-text text-muted">Personel fotoğrafının URL adresi</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="department" class="form-label">Departman</label>
+                                    <select class="form-select" id="department" name="department">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Yazılım">Yazılım</option>
+                                        <option value="Muhasebe">Muhasebe</option>
+                                        <option value="İnsan Kaynakları">İnsan Kaynakları</option>
+                                        <option value="Satış">Satış</option>
+                                        <option value="Pazarlama">Pazarlama</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- İş Bilgileri -->
+                            <h6 class="section-title mb-3 mt-4">
+                                <i class="bi bi-briefcase"></i> İş Bilgileri
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="hireDate" class="form-label">İşe Giriş Tarihi</label>
+                                    <input type="date" class="form-control" id="hireDate" name="hireDate">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="salary" class="form-label">Maaş (₺)</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="salary" name="salary" 
+                                           placeholder="0.00">
+                                    <small class="form-text text-muted">Net maaş tutarı</small>
+                                </div>
+                            </div>
+
+                            <!-- İzin Bilgileri -->
+                            <h6 class="section-title mb-3 mt-4">
+                                <i class="bi bi-calendar-check"></i> İzin Bilgileri
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="annualLeaveQuota" class="form-label">Yıllık İzin Hakkı</label>
+                                    <input type="number" min="0" class="form-control" id="annualLeaveQuota" name="annualLeaveQuota" 
+                                           value="14" placeholder="14">
+                                    <small class="form-text text-muted">Yıllık kullanılabilir izin günü</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="usedLeaveDays" class="form-label">Kullanılan İzin Günü</label>
+                                    <input type="number" min="0" class="form-control" id="usedLeaveDays" name="usedLeaveDays" 
+                                           value="0" placeholder="0">
+                                    <small class="form-text text-muted">Bu yıl kullanılan izin günü</small>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                                <a th:href="@{/personel}" class="btn btn-secondary">
+                                    <i class="bi bi-x-lg"></i> İptal
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i> Kaydet
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/form-handler.js}"></script>
+</body>
+</html>
+

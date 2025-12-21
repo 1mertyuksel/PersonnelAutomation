@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle + ' - ' : ''}CORP ERP v3.0">CORP ERP v3.0</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    
+    <th:block th:fragment="head-extra"></th:block>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <span class="brand-text">CORP ERP v3.0</span>
+            </div>
+            <div class="nav-links">
+                <a th:href="@{/dashboard}" class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active'">
+                    Dashboard
+                </a>
+                <a th:href="@{/personel}" class="nav-link" th:classappend="${activePage == 'personel'} ? 'active'">
+                    Personel & Zimmet
+                </a>
+                <a th:href="@{/payroll}" class="nav-link" th:classappend="${activePage == 'payroll'} ? 'active'">
+                    Maaş Motoru
+                </a>
+                <a th:href="@{/reports}" class="nav-link" th:classappend="${activePage == 'reports'} ? 'active'">
+                    Raporlama
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div th:replace="~{fragments/alerts :: alerts}"></div>
+            <th:block th:fragment="content"></th:block>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+    
+    <th:block th:fragment="scripts-extra"></th:block>
+</body>
+</html>

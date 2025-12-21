@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapor Merkezi - CORP ERP v3.0</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <span class="brand-text">CORP ERP v3.0</span>
+            </div>
+            <div class="nav-links">
+                <a th:href="@{/dashboard}" class="nav-link">
+                    Dashboard
+                </a>
+                <a th:href="@{/personel}" class="nav-link">
+                    Personel & Zimmet
+                </a>
+                <a th:href="@{/payroll}" class="nav-link">
+                    Maaş Motoru
+                </a>
+                <a th:href="@{/reports}" class="nav-link active">
+                    Raporlama
+                </a>
+            </div>
+            <div class="nav-actions">
+                <a th:href="@{/logout}" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Çıkış Yap
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <h1 class="page-title">Rapor Merkezi</h1>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <p class="lead">Şirket veritabanındaki tüm verileri (Personel, Maaş, İzin, Zimmet) dışarı aktarın.</p>
+                        
+                        <div class="mt-4">
+                            <h5>İçerilen Veriler:</h5>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="bi bi-check-circle text-success"></i> Personel Kimlik Bilgileri</li>
+                                <li><i class="bi bi-check-circle text-success"></i> İşe Giriş Tarihleri</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Güncel Zimmet Listesi</li>
+                                <li><i class="bi bi-check-circle text-success"></i> İzin Bakiyeleri</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="button" class="btn btn-primary" onclick="exportData()">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                                Excel/CSV Olarak İndir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+    
+    <script>
+        function exportData() {
+            alert('Rapor export özelliği yakında eklenecek!');
+        }
+    </script>
+</body>
+</html>

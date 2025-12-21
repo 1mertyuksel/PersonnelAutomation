@@ -10,8 +10,6 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -23,32 +21,19 @@ import java.util.concurrent.CompletableFuture;
  * 
  * @param <T> Entity tipi (BaseEntity'den extend eden)
  */
-@org.springframework.stereotype.Repository
 @Transactional
 public class Repository<T extends BaseEntity> implements IRepository<T> {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
 
-    @SuppressWarnings("unchecked")
+    public Repository(Class<T> entityClass) {
+        this.entityClass = entityClass;
+    }
+
     private Class<T> getEntityClass() {
-        if (entityClass == null) {
-            Type genericSuperclass = getClass().getGenericSuperclass();
-            if (genericSuperclass instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                if (actualTypeArguments.length > 0 && actualTypeArguments[0] instanceof Class) {
-                    entityClass = (Class<T>) actualTypeArguments[0];
-                }
-            }
-            // Eğer generic type bulunamazsa, reflection ile bulmaya çalış
-            if (entityClass == null) {
-                throw new IllegalStateException("Generic type T could not be determined. " +
-                    "Service katmanında IRepository<Entity> şeklinde kullanın.");
-            }
-        }
         return entityClass;
     }
 
@@ -56,91 +41,99 @@ public class Repository<T extends BaseEntity> implements IRepository<T> {
 
     @Override
     public CompletableFuture<T> addAsync(T entity) {
-        return CompletableFuture.supplyAsync(() -> {
-            entityManager.persist(entity);
-            return entity;
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        return CompletableFuture.completedFuture(addSync(entity));
+    }
+    
+    private T addSync(T entity) {
+        entityManager.persist(entity);
+        entityManager.flush(); // Transaction'ı commit etmek için
+        return entity;
     }
 
     @Override
     public CompletableFuture<Void> addRangeAsync(List<T> entities) {
-        return CompletableFuture.runAsync(() -> {
-            for (T entity : entities) {
-                entityManager.persist(entity);
-            }
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        for (T entity : entities) {
+            entityManager.persist(entity);
+        }
+        entityManager.flush();
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
     public CompletableFuture<T> updateAsync(T entity) {
-        return CompletableFuture.supplyAsync(() -> {
-            return entityManager.merge(entity);
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        return CompletableFuture.completedFuture(updateSync(entity));
+    }
+    
+    private T updateSync(T entity) {
+        T merged = entityManager.merge(entity);
+        entityManager.flush(); // Transaction'ı commit etmek için
+        return merged;
     }
 
     @Override
     public CompletableFuture<Void> updateRangeAsync(List<T> entities) {
-        return CompletableFuture.runAsync(() -> {
-            for (T entity : entities) {
-                entityManager.merge(entity);
-            }
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        for (T entity : entities) {
+            entityManager.merge(entity);
+        }
+        entityManager.flush();
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
     public CompletableFuture<Void> removeAsync(Long id) {
-        return CompletableFuture.runAsync(() -> {
-            Optional<T> entityOpt = getByIdAsync(id).join();
-            if (entityOpt.isEmpty()) {
-                throw new RuntimeException("Entity with id " + id + " not found.");
-            }
-            
-            T entity = entityOpt.get();
-            
-            // Soft delete için IsDeleted property'sini kontrol et
-            try {
-                Method isDeletedMethod = entity.getClass().getMethod("setIsDeleted", boolean.class);
-                isDeletedMethod.invoke(entity, true);
-                entityManager.merge(entity);
-            } catch (Exception e) {
-                // IsDeleted property yoksa hard delete yap
-                entityManager.remove(entity);
-            }
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        T entity = entityManager.find(getEntityClass(), id);
+        if (entity == null) {
+            throw new RuntimeException("Entity with id " + id + " not found.");
+        }
+        
+        // Soft delete için IsDeleted property'sini kontrol et
+        try {
+            Method isDeletedMethod = entity.getClass().getMethod("setIsDeleted", boolean.class);
+            isDeletedMethod.invoke(entity, true);
+            entityManager.merge(entity);
+        } catch (Exception e) {
+            // IsDeleted property yoksa hard delete yap
+            entityManager.remove(entity);
+        }
+        entityManager.flush();
+        return CompletableFuture.completedFuture(null);
     }
 
     // --- Sorgulama Metodları ---
 
     @Override
     public CompletableFuture<Optional<T>> getByIdAsync(Long id) {
-        return CompletableFuture.supplyAsync(() -> {
-            T entity = entityManager.find(getEntityClass(), id);
-            return Optional.ofNullable(entity);
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        return CompletableFuture.completedFuture(Optional.ofNullable(entityManager.find(getEntityClass(), id)));
     }
 
     @Override
     public CompletableFuture<List<T>> getAllAsync() {
-        return CompletableFuture.supplyAsync(() -> {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<T> query = cb.createQuery(getEntityClass());
-            Root<T> root = query.from(getEntityClass());
-            query.select(root);
-            TypedQuery<T> typedQuery = entityManager.createQuery(query);
-            return typedQuery.getResultList();
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> query = cb.createQuery(getEntityClass());
+        Root<T> root = query.from(getEntityClass());
+        query.select(root);
+        TypedQuery<T> typedQuery = entityManager.createQuery(query);
+        return CompletableFuture.completedFuture(typedQuery.getResultList());
     }
 
     @Override
     public CompletableFuture<List<T>> getAllAsyncNoTracking() {
-        return CompletableFuture.supplyAsync(() -> {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<T> query = cb.createQuery(getEntityClass());
-            Root<T> root = query.from(getEntityClass());
-            query.select(root);
-            TypedQuery<T> typedQuery = entityManager.createQuery(query);
-            return typedQuery.getResultList();
-        });
+        // Transaction içinde çalışması için sync yapıyoruz
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> query = cb.createQuery(getEntityClass());
+        Root<T> root = query.from(getEntityClass());
+        query.select(root);
+        TypedQuery<T> typedQuery = entityManager.createQuery(query);
+        List<T> results = typedQuery.getResultList();
+        results.forEach(entityManager::detach);
+        return CompletableFuture.completedFuture(results);
     }
 
     @Override
