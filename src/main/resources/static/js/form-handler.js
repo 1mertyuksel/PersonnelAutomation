@@ -16,10 +16,22 @@ function handlePersonelForm(e) {
     // Convert FormData to object and handle empty strings
     const data = {};
     for (let [key, value] of formData.entries()) {
+        // Departman alanını (select) özel ele al: Department entity id'si
+        if (key === 'departmentId') {
+            if (value !== '') {
+                const depId = parseInt(value);
+                if (!isNaN(depId)) {
+                    data.department = { id: depId };
+                }
+            }
+            // departmentId form alanını başka şekilde map etmeyeceğiz
+            continue;
+        }
+
         // Skip empty strings for optional fields
         if (value === '') {
             // Skip optional fields that are empty
-            if (key === 'department' || key === 'photoUrl' || key === 'hireDate' || key === 'salary') {
+            if (key === 'photoUrl' || key === 'hireDate' || key === 'salary') {
                 continue;
             }
             // For number fields, set default values if empty

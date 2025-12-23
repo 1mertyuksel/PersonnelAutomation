@@ -2,6 +2,7 @@ package com.project.controller.views;
 
 import com.project.entity.Personel;
 import com.project.service.interfaces.IPersonelService;
+import com.project.service.interfaces.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,18 +18,22 @@ public class PersonelViewController {
     @Autowired
     private IPersonelService personelService;
 
+    @Autowired
+    private IDepartmentService departmentService;
+
     @GetMapping
-    public String list(Model model, @RequestParam(required = false) String department) {
+    public String list(Model model, @RequestParam(required = false) Long departmentId) {
         var allPersonel = personelService.findAll();
-        
-        if (department != null && !department.isEmpty() && !"Tüm Departmanlar".equals(department)) {
+
+        if (departmentId != null) {
             allPersonel = allPersonel.stream()
-                .filter(p -> department.equals(p.getDepartment()))
+                .filter(p -> p.getDepartment() != null && departmentId.equals(p.getDepartment().getId()))
                 .toList();
         }
-        
+
         model.addAttribute("personeller", allPersonel);
-        model.addAttribute("selectedDepartment", department != null ? department : "Tüm Departmanlar");
+        model.addAttribute("departments", departmentService.findAll());
+        model.addAttribute("selectedDepartmentId", departmentId);
         model.addAttribute("activePage", "personel");
         return "personel/list";
     }
@@ -36,6 +41,7 @@ public class PersonelViewController {
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("personel", new Personel());
+        model.addAttribute("departments", departmentService.findAll());
         model.addAttribute("activePage", "personel");
         model.addAttribute("isEdit", false);
         return "personel/create";
@@ -46,6 +52,7 @@ public class PersonelViewController {
         var personelOpt = personelService.getByIdAsync(id).join();
         if (personelOpt.isPresent()) {
             model.addAttribute("personel", personelOpt.get());
+            model.addAttribute("departments", departmentService.findAll());
             model.addAttribute("activePage", "personel");
             model.addAttribute("isEdit", true);
             return "personel/edit";

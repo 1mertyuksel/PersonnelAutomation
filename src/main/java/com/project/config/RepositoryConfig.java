@@ -38,6 +38,11 @@ public class RepositoryConfig {
     public IRepository<Payroll> payrollRepository() {
         return new Repository<>(Payroll.class);
     }
+
+    @Bean
+    public IRepository<Department> departmentRepository() {
+        return new Repository<>(Department.class);
+    }
 }
 
 

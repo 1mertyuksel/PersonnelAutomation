@@ -7,8 +7,10 @@ import com.project.entity.User;
  * Login ve kullanıcı işlemleri için business logic interface
  */
 public interface IUserService extends IService<User> {
-    
-    // User'a özel metodlar buraya eklenebilir
-    // Örneğin: findByUsername, authenticate, etc.
+
+    /**
+     * Kullanıcı adından kullanıcıyı bulur (yoksa null döner).
+     */
+    User findByUsername(String username);
 }
 

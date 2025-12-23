@@ -1,0 +1,39 @@
+package com.project.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+/**
+ * Departman Entity
+ * Personellerin bağlı olduğu departmanları temsil eder.
+ */
+@Entity
+@Table(name = "departments")
+public class Department extends BaseEntity {
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String name;
+
+    @Column(length = 255)
+    private String description;
+
+    // Getter & Setter
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}
+
+

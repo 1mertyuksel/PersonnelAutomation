@@ -1,92 +1,168 @@
 <!DOCTYPE html>
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CORP ERP v3.0</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
-    <link th:href="@{/css/main.css}" rel="stylesheet">
-</head>
+<head th:replace="~{layout/base :: head}"></head>
 <body>
-    <div class="app-container">
-        <!-- Top Navigation -->
-        <nav class="top-nav">
-            <div class="nav-brand">
-                <span class="brand-text">CORP ERP v3.0</span>
-            </div>
-            <div class="nav-links">
-                <a th:href="@{/dashboard}" class="nav-link active">
-                    Dashboard
-                </a>
-                <a th:href="@{/personel}" class="nav-link">
-                    Personel & Zimmet
-                </a>
-                <a th:href="@{/payroll}" class="nav-link">
-                    Maaş Motoru
-                </a>
-                <a th:href="@{/reports}" class="nav-link">
-                    Raporlama
-                </a>
-            </div>
-            <div class="nav-actions">
-                <a th:href="@{/logout}" class="btn-logout">
-                    <i class="bi bi-box-arrow-right"></i>
-                    Çıkış Yap
-                </a>
-            </div>
-        </nav>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="content-wrapper">
-                <h1 class="dashboard-section-title">Şirket Genel Durumu</h1>
-                
-                <div class="stats-grid">
-                    <div class="metric-card primary">
-                        <h4>TOPLAM PERSONEL</h4>
-                        <div class="metric-value" th:text="${personelCount}">0</div>
-                    </div>
-                    
-                    <div class="metric-card success">
-                        <h4>TOPLAM MAAŞ YÜKÜ</h4>
-                        <div class="metric-value" th:text="${totalSalary != null ? (totalSalary + ' Bin ₺') : '0.0 Bin ₺'}">0.0 Bin ₺</div>
-                    </div>
-                    
-                    <div class="metric-card warning">
-                        <h4>ZİMMETLİ EŞYALAR</h4>
-                        <div class="metric-value" th:text="${inventoryCount}">0</div>
-                    </div>
+
+<div th:replace="~{layout/base :: layout(~{::content}, 'Genel Bakış')}">
+
+    <th:block th:fragment="content">
+        <div class="content-wrapper">
+            <h1 class="dashboard-section-title mb-4">Genel Bakış</h1>
+
+            <div class="stats-grid mb-4">
+                <div class="metric-card primary">
+                    <h4>TOPLAM PERSONEL</h4>
+                    <div class="metric-value" th:text="${personelCount}">0</div>
                 </div>
-                
-                <div class="chart-section">
-                    <div class="chart-title">
-                        <i class="bi bi-pie-chart"></i>
-                        Departman Dağılım Grafiği
-                    </div>
-                    <div class="department-distribution" th:if="${departmentStats != null && !#lists.isEmpty(departmentStats)}">
-                        <div class="dept-stats-list">
-                            <span th:each="stat, iterStat : ${departmentStats}">
-                                <strong th:text="${stat.name}">Yazılım</strong>: %<span th:text="${stat.percentage}">40</span>
-                                <span th:if="${!iterStat.last}"> | </span>
-                            </span>
+
+                <div class="metric-card success">
+                    <h4>TOPLAM MAAŞ YÜKÜ</h4>
+                    <div class="metric-value"
+                         th:text="${totalSalary != null ? (totalSalary + ' Bin ₺') : '0.0 Bin ₺'}">0.0 Bin ₺</div>
+                </div>
+
+                <div class="metric-card warning">
+                    <h4>ZİMMETLİ EŞYALAR</h4>
+                    <div class="metric-value" th:text="${inventoryCount}">0</div>
+                </div>
+            </div>
+
+            <div class="chart-section mt-4">
+                <div class="row g-4">
+                    <!-- Pasta Grafik -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card h-100 chart-card">
+                            <div class="card-header d-flex align-items-center gap-2">
+                                <i class="bi bi-pie-chart"></i>
+                                <span>Departman Dağılımı</span>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="departmentPieChart"
+                                        th:if="${departmentStats != null && !#lists.isEmpty(departmentStats)}"></canvas>
+                                <p th:if="${departmentStats == null || #lists.isEmpty(departmentStats)}"
+                                   class="text-muted mb-0">
+                                    Departman dağılım grafiği için yeterli veri bulunmuyor.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div th:if="${departmentStats == null || #lists.isEmpty(departmentStats)}" class="text-muted">
-                        <p>Yazılım: %40 | Muhasebe: %30 | İK: %20 | Satış: %10</p>
+                    <!-- Detay + Ek Grafik -->
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Departman İstatistikleri
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-2 text-muted">Departman Dağılım Detayı</h6>
+                                        <div class="department-distribution"
+                                             th:if="${departmentStats != null && !#lists.isEmpty(departmentStats)}">
+                                            <div class="dept-stats-list">
+                                                <span th:each="stat, iterStat : ${departmentStats}">
+                                                    <strong th:text="${stat.name}">Yazılım</strong>:
+                                                    %<span th:text="${stat.percentage}">40</span>
+                                                    <span th:if="${!iterStat.last}"> | </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div th:if="${departmentStats == null || #lists.isEmpty(departmentStats)}"
+                                             class="text-muted">
+                                            <p>Yazılım: %40 | Muhasebe: %30 | İK: %20 | Satış: %10</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="mb-2 text-muted">Yüzde Dağılımı</h6>
+                                        <canvas id="departmentBarChart"
+                                                th:if="${departmentStats != null && !#lists.isEmpty(departmentStats)}"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </th:block>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script th:src="@{/js/main.js}"></script>
+</div>
+
+<script th:if="${departmentStats != null && !#lists.isEmpty(departmentStats)}" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('departmentPieChart');
+        if (!ctx || typeof Chart === 'undefined') { return; }
+
+        var labels = [];
+        var dataValues = [];
+        /*[# th:each="stat : ${departmentStats}"]*/
+        labels.push(/*[[${stat.name}]]*/"");
+        dataValues.push(/*[[${stat.percentage}]]*/0);
+        /*[/]*/
+
+        var chartColors = [
+            '#3b82f6', '#10b981', '#f59e0b',
+            '#ef4444', '#8b5cf6', '#06b6d4'
+        ];
+
+        // Pasta grafik
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: labels.map(function (_, i) {
+                        return chartColors[i % chartColors.length];
+                    }),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 14,
+                            boxHeight: 14
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Çubuk grafik (yüzde dağılımı)
+        var barCtx = document.getElementById('departmentBarChart');
+        if (barCtx) {
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Yüzde Dağılımı',
+                        data: dataValues,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 6,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 10, callback: function (v) { return v + '%'; } }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

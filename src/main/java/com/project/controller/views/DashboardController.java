@@ -42,15 +42,16 @@ public class DashboardController {
         // Zimmetli eşya sayısı
         int inventoryCount = inventoryService.findAll().size();
         
-        // Departman dağılımı
-        Map<String, Long> deptCount = allPersonel.stream()
-            .filter(p -> p.getDepartment() != null && !p.getDepartment().isEmpty())
+        // Departman dağılımı (Department entity üzerinden)
+        Map<com.project.entity.Department, Long> deptCount = allPersonel.stream()
+            .filter(p -> p.getDepartment() != null)
             .collect(Collectors.groupingBy(Personel::getDepartment, Collectors.counting()));
         
         List<Map<String, Object>> departmentStats = deptCount.entrySet().stream()
             .map(entry -> {
                 Map<String, Object> stat = new HashMap<>();
-                stat.put("name", entry.getKey());
+                String name = entry.getKey() != null ? entry.getKey().getName() : "Belirtilmemiş";
+                stat.put("name", name);
                 double percentage = personelCount > 0 ? (entry.getValue().doubleValue() / personelCount) * 100 : 0;
                 stat.put("percentage", Math.round(percentage));
                 return stat;

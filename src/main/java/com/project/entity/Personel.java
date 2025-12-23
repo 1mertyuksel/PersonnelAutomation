@@ -12,7 +12,9 @@ public class Personel extends BaseEntity {
     private String firstName;
     private String lastName;
     
-    private String department; // "Yazılım", "Muhasebe" (Enum yapmaya gerek yok, String yeterli)
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department; // Departman entity referansı
     
     private String photoUrl; // Resmin kendisini değil, dosya yolunu tutarız.
 
@@ -40,8 +42,8 @@ public class Personel extends BaseEntity {
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
+    public Department getDepartment() { return department; }
+    public void setDepartment(Department department) { this.department = department; }
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
     public LocalDate getHireDate() { return hireDate; }

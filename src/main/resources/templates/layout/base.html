@@ -3,52 +3,68 @@
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle != null ? pageTitle + ' - ' : ''}CORP ERP v3.0">CORP ERP v3.0</title>
-    
+    <title th:text="${pageTitle != null ? pageTitle + ' - İK Paneli' : 'İK Paneli'}">İK Paneli</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link th:href="@{/css/main.css}" rel="stylesheet">
-    
-    <th:block th:fragment="head-extra"></th:block>
+    <!-- Chart.js (Dashboard charts) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Top Navigation -->
-        <nav class="top-nav">
-            <div class="nav-brand">
-                <span class="brand-text">CORP ERP v3.0</span>
+
+<!-- Genel layout: sol sidebar + üst bar + içerik -->
+<div th:fragment="layout(content, pageTitle)" class="ik-layout d-flex">
+
+    <!-- SOL SİDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- SAĞ ANA KISIM -->
+    <div class="ik-main flex-grow-1 d-flex flex-column">
+
+        <!-- ÜST BAR -->
+        <header class="ik-topbar d-flex align-items-center justify-content-between px-4 py-3 border-bottom bg-white">
+            <div>
+                <h1 class="h5 mb-0" th:text="${pageTitle != null ? pageTitle : 'Genel Bakış'}">Genel Bakış</h1>
             </div>
-            <div class="nav-links">
-                <a th:href="@{/dashboard}" class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active'">
-                    Dashboard
-                </a>
-                <a th:href="@{/personel}" class="nav-link" th:classappend="${activePage == 'personel'} ? 'active'">
-                    Personel & Zimmet
-                </a>
-                <a th:href="@{/payroll}" class="nav-link" th:classappend="${activePage == 'payroll'} ? 'active'">
-                    Maaş Motoru
-                </a>
-                <a th:href="@{/reports}" class="nav-link" th:classappend="${activePage == 'reports'} ? 'active'">
-                    Raporlama
-                </a>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="text-end me-1">
+                            <div class="fw-semibold small"
+                                 th:text="${currentUserName != null ? currentUserName : 'Yönetici'}">
+                                Yönetici
+                            </div>
+                            <div class="text-muted xsmall">İK Paneli</div>
+                        </div>
+                        <div class="avatar-circle bg-primary text-white fw-bold">
+                            <span th:text="${currentUserInitials != null ? currentUserInitials : 'AD'}">AD</span>
+                        </div>
+                    </div>
+                    <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Çıkış</span>
+                    </a>
+                </div>
             </div>
-        </nav>
-        
-        <!-- Main Content -->
-        <main class="main-content">
+        </header>
+
+        <!-- SAYFA İÇERİĞİ -->
+        <main class="main-content flex-grow-1 p-4">
             <div th:replace="~{fragments/alerts :: alerts}"></div>
-            <th:block th:fragment="content"></th:block>
+            <th:block th:replace="${content}"></th:block>
         </main>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script th:src="@{/js/main.js}"></script>
-    
-    <th:block th:fragment="scripts-extra"></th:block>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script th:src="@{/js/main.js}"></script>
+
 </body>
 </html>

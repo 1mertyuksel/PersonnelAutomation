@@ -1,7 +1,11 @@
 package com.project.controller.controllers;
 
+import com.project.dto.PayrollCalculationRequest;
 import com.project.entity.Payroll;
+import com.project.entity.Personel;
+import com.project.service.helpers.PayrollCalculator;
 import com.project.service.interfaces.IPayrollService;
+import com.project.service.interfaces.IPersonelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +24,11 @@ public class PayrollController {
     
     @Autowired
     private IPayrollService payrollService;
+
+    @Autowired
+    private IPersonelService personelService;
+
+    private final PayrollCalculator payrollCalculator = new PayrollCalculator();
     
     @GetMapping
     public ResponseEntity<List<Payroll>> getAll() {
@@ -40,6 +49,45 @@ public class PayrollController {
     public ResponseEntity<Payroll> create(@RequestBody Payroll payroll) {
         Payroll created = payrollService.addAsync(payroll).join();
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    /**
+     * Modüler bordro oluşturma endpoint'i.
+     * Frontend'den gelen parametreler ile bordro hesaplanır ve kaydedilir.
+     */
+    @PostMapping("/calculate")
+    public ResponseEntity<?> calculatePayroll(@RequestBody PayrollCalculationRequest request) {
+        try {
+            if (request.getPersonelId() == null) {
+                return ResponseEntity.badRequest().body("Personel seçilmedi.");
+            }
+
+            Personel personel = personelService.getByIdAsync(request.getPersonelId())
+                    .join()
+                    .orElse(null);
+
+            if (personel == null) {
+                return ResponseEntity.badRequest().body("Personel bulunamadı.");
+            }
+
+            int daysWorked = request.getDaysWorked() != null ? request.getDaysWorked() : 30;
+            int overtime = request.getOvertime() != null ? request.getOvertime() : 0;
+
+            Payroll payroll = payrollCalculator.calculate(
+                    personel,
+                    daysWorked,
+                    overtime,
+                    request.getPayrollDate(),
+                    request.getDescription()
+            );
+
+            Payroll created = payrollService.addAsync(payroll).join();
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Bordro hesaplanırken hata oluştu: " + ex.getMessage());
+        }
     }
     
     @PutMapping("/{id}")

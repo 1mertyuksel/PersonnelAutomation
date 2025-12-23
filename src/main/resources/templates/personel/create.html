@@ -1,40 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yeni Personel Ekle - CORP ERP v3.0</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
-    <link th:href="@{/css/main.css}" rel="stylesheet">
-</head>
+<head th:replace="~{layout/base :: head}"></head>
 <body>
-    <div class="app-container">
-        <!-- Top Navigation -->
-        <nav class="top-nav">
-            <div class="nav-brand">
-                <span class="brand-text">CORP ERP v3.0</span>
-            </div>
-            <div class="nav-links">
-                <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
-                <a th:href="@{/personel}" class="nav-link active">Personel & Zimmet</a>
-                <a th:href="@{/payroll}" class="nav-link">Maaş Motoru</a>
-                <a th:href="@{/reports}" class="nav-link">Raporlama</a>
-            </div>
-            <div class="nav-actions">
-                <a th:href="@{/logout}" class="btn-logout">
-                    <i class="bi bi-box-arrow-right"></i> Çıkış Yap
-                </a>
-            </div>
-        </nav>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="content-wrapper">
+
+<div th:replace="~{layout/base :: layout(~{::content}, 'Yeni Personel')}">
+
+    <th:block th:fragment="content">
+        <div class="content-wrapper">
                 <!-- Page Header -->
                 <div class="page-header">
                     <h1 class="page-title">Yeni Personel Ekle</h1>
@@ -77,14 +49,13 @@
                                     <small class="form-text text-muted">Personel fotoğrafının URL adresi</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="department" class="form-label">Departman</label>
-                                    <select class="form-select" id="department" name="department">
+                                    <label for="departmentId" class="form-label">Departman</label>
+                                    <select class="form-select" id="departmentId" name="departmentId">
                                         <option value="">Seçiniz</option>
-                                        <option value="Yazılım">Yazılım</option>
-                                        <option value="Muhasebe">Muhasebe</option>
-                                        <option value="İnsan Kaynakları">İnsan Kaynakları</option>
-                                        <option value="Satış">Satış</option>
-                                        <option value="Pazarlama">Pazarlama</option>
+                                        <option th:each="dept : ${departments}"
+                                                th:value="${dept.id}"
+                                                th:text="${dept.name}">
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -138,14 +109,13 @@
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </th:block>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script th:src="@{/js/main.js}"></script>
-    <script th:src="@{/js/form-handler.js}"></script>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/form-handler.js}"></script>
 </body>
 </html>
 

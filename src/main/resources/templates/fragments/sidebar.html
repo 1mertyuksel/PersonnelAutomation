@@ -14,7 +14,15 @@
             </a>
             <a th:href="@{/personel}" class="nav-item" th:classappend="${activePage == 'personel'} ? 'active'">
                 <i class="bi bi-people-fill"></i>
-                <span>Personel & Zimmet</span>
+                <span>Personel</span>
+            </a>
+            <a th:href="@{/inventory}" class="nav-item" th:classappend="${activePage == 'inventory'} ? 'active'">
+                <i class="bi bi-box-seam"></i>
+                <span>Zimmet</span>
+            </a>
+            <a th:href="@{/departments}" class="nav-item" th:classappend="${activePage == 'departments'} ? 'active'">
+                <i class="bi bi-diagram-3"></i>
+                <span>Departmanlar</span>
             </a>
             <a th:href="@{/payroll}" class="nav-item" th:classappend="${activePage == 'payroll'} ? 'active'">
                 <i class="bi bi-wallet2"></i>

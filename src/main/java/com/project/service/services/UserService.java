@@ -17,8 +17,15 @@ public class UserService extends com.project.service.services.Service<User> impl
     public UserService(IRepository<User> repository) {
         super(repository);
     }
-    
-    // User'a özel metodlar buraya eklenebilir
-    // Örneğin: findByUsername, authenticate, etc.
+
+    @Override
+    public User findByUsername(String username) {
+        // Basit implementasyon: tüm kullanıcıları çekip filtrele.
+        // Gerçek dünyada burada JPA query / criteria kullanılmalı.
+        return this.findAll().stream()
+                .filter(u -> u.getUsername() != null && u.getUsername().equalsIgnoreCase(username))
+                .findFirst()
+                .orElse(null);
+    }
 }
 
