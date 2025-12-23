@@ -39,7 +39,8 @@
 <script th:src="@{/js/main.js}"></script>
 <script>
     function exportData() {
-        alert('Rapor export özelliği yakında eklenecek!');
+        // Basit: tarayıcıya CSV dosyasını indirt
+        window.location.href = '/api/reports/export';
     }
 </script>
 </body>

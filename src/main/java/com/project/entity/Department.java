@@ -4,10 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-/**
- * Departman Entity
- * Personellerin bağlı olduğu departmanları temsil eder.
- */
+
 @Entity
 @Table(name = "departments")
 public class Department extends BaseEntity {

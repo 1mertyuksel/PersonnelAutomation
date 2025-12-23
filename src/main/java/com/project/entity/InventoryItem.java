@@ -7,12 +7,11 @@ import java.time.LocalDate;
 @Table(name = "inventory_items")
 public class InventoryItem extends BaseEntity {
 
-    private String productName; // "Macbook Pro", "Şirket Aracı"
-    private String serialNumber; // "S/N: 123456"
+    private String productName; 
+    private String serialNumber; 
     
-    private LocalDate assignedDate; // Ne zaman verildi?
+    private LocalDate assignedDate; 
 
-    // Bu eşya kime zimmetli?
     @ManyToOne
     @JoinColumn(name = "personnel_id")
     private Personel personel;

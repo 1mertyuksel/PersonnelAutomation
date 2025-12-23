@@ -6,10 +6,7 @@ import com.project.service.interfaces.IInventoryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * InventoryItem Entity için Service Implementation
- * Zimmet (Envanter) işlemleri için business logic
- */
+
 @Service
 public class InventoryItemService extends com.project.service.services.Service<InventoryItem> implements IInventoryItemService {
     
@@ -18,7 +15,6 @@ public class InventoryItemService extends com.project.service.services.Service<I
         super(repository);
     }
     
-    // InventoryItem'a özel metodlar buraya eklenebilir
-    // Örneğin: findByPersonelId, assignToPersonel, etc.
+    
 }
 

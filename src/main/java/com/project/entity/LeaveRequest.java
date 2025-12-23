@@ -9,11 +9,10 @@ public class LeaveRequest extends BaseEntity {
 
     private LocalDate startDate;
     private LocalDate endDate;
-    private int daysCount; // Kaç gün izin kullandı?
+    private int daysCount; 
     
-    private String status; // "ONAYLANDI", "REDDEDILDI", "BEKLIYOR"
+    private String status; 
 
-    // Hangi personel izin istedi?
     @ManyToOne
     @JoinColumn(name = "personnel_id")
     private Personel personel;

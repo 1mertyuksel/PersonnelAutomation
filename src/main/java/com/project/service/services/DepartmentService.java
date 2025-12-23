@@ -6,9 +6,7 @@ import com.project.service.interfaces.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Department Entity için Service Implementation
- */
+
 @Service
 public class DepartmentService extends com.project.service.services.Service<Department> implements IDepartmentService {
 

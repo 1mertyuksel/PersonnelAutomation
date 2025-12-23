@@ -6,12 +6,12 @@ import jakarta.persistence.*;
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    @Column(unique = true) // Aynı kullanıcı adı 2 kez alınamasın
+    @Column(unique = true) 
     private String username;
     
-    private String password; // Gerçek hayatta şifrelenir ama projede düz tutabilirsin.
+    private String password; 
     
-    private String role; // "ADMIN", "IK_PERSONEL" vs.
+    private String role; 
 
     // Getter & Setter
     public String getUsername() { return username; }

@@ -6,10 +6,7 @@ import com.project.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * User Entity için Service Implementation
- * Login ve kullanıcı işlemleri için business logic
- */
+
 @Service
 public class UserService extends com.project.service.services.Service<User> implements IUserService {
     
@@ -20,8 +17,6 @@ public class UserService extends com.project.service.services.Service<User> impl
 
     @Override
     public User findByUsername(String username) {
-        // Basit implementasyon: tüm kullanıcıları çekip filtrele.
-        // Gerçek dünyada burada JPA query / criteria kullanılmalı.
         return this.findAll().stream()
                 .filter(u -> u.getUsername() != null && u.getUsername().equalsIgnoreCase(username))
                 .findFirst()

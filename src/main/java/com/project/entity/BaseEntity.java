@@ -3,7 +3,7 @@ package com.project.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@MappedSuperclass // Bu sınıf veritabanında tablo olmayacak ama miras verilecek
+@MappedSuperclass 
 public abstract class BaseEntity {
 
     @Id
