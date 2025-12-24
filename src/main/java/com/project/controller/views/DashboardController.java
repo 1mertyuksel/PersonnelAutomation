@@ -8,8 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -32,12 +35,18 @@ public class DashboardController {
         // Toplam personel sayısı
         int personelCount = allPersonel.size();
         
-        // Toplam maaş yükü (bin TL cinsinden)
+        // Toplam maaş yükü (TL cinsinden)
         BigDecimal totalSalary = allPersonel.stream()
             .filter(p -> p.getSalary() != null)
             .map(Personel::getSalary)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-        double totalSalaryInThousands = totalSalary.divide(new BigDecimal("1000"), 1, java.math.RoundingMode.HALF_UP).doubleValue();
+
+        // Türkçe format: binlik ayırıcı nokta, ondalık ayırıcı virgül
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.forLanguageTag("tr-TR"));
+        symbols.setGroupingSeparator('.');
+        symbols.setDecimalSeparator(',');
+        DecimalFormat df = new DecimalFormat("#,##0.00", symbols);
+        String totalSalaryFormatted = df.format(totalSalary);
         
         // Zimmetli eşya sayısı
         int inventoryCount = inventoryService.findAll().size();
@@ -59,7 +68,8 @@ public class DashboardController {
             .collect(Collectors.toList());
         
         model.addAttribute("personelCount", personelCount);
-        model.addAttribute("totalSalary", totalSalaryInThousands);
+        model.addAttribute("totalSalary", totalSalary);
+        model.addAttribute("totalSalaryFormatted", totalSalaryFormatted);
         model.addAttribute("inventoryCount", inventoryCount);
         model.addAttribute("departmentStats", departmentStats);
         model.addAttribute("activePage", "dashboard");

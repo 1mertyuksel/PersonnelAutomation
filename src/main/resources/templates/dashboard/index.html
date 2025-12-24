@@ -18,7 +18,7 @@
                 <div class="metric-card success">
                     <h4>TOPLAM MAAŞ YÜKÜ</h4>
                     <div class="metric-value"
-                         th:text="${totalSalary != null ? (totalSalary + ' Bin ₺') : '0.0 Bin ₺'}">0.0 Bin ₺</div>
+                         th:text="${totalSalaryFormatted != null ? (totalSalaryFormatted + ' ₺') : '0,00 ₺'}">0,00 ₺</div>
                 </div>
 
                 <div class="metric-card warning">
